@@ -13,7 +13,7 @@ def ScrapeData(username: str, password: str, internetlevel=5):
     Returns a dataframe of all the attendance on portal.zsvkm website"""
     internetlevel=(5-internetlevel)
     options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
+    # options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
 
     url = "https://portal.svkm.ac.in/usermgmt/login"
@@ -64,6 +64,7 @@ def ScrapeData(username: str, password: str, internetlevel=5):
     return dfs[0]
 
 def ProcessData(df, startdate='2024-01-01', enddate=None):
+    
     df.columns = ['ID', 'Student ID', 'Course', 'Month', 'Year', 'Date', 'Time', 'Status']
     
     df['Status']=df['Status'].apply(lambda x: 1 if x=='P' or x==1 else 0)
@@ -73,10 +74,14 @@ def ProcessData(df, startdate='2024-01-01', enddate=None):
     cutoff_end_date=pd.to_datetime(enddate)
     
     if enddate is None:
-        result_2024_01_01 = df[df['Date'] > cutoff_date].groupby('Course')['Status'].mean().sort_values() * 100
-        df=df[df['Date'] > cutoff_date]
+        result_2024_01_01 = df[df['Date'] > cutoff_date].groupby('Course')['Status'].agg(['mean', 'sum','count']).sort_values(by='mean', ascending=True)
+        # result_2024_01_01['Total Lectures'] = result_2024_01_01['count']
+        # result_2024_01_01['Attended Lectures'] = result_2024_01_01['mean'] * result_2024_01_01['count']
+        df = df[df['Date'] > cutoff_date]
     else:
-        result_2024_01_01 = df[df['Date'] > cutoff_date ][ df['Date']< cutoff_end_date].groupby('Course')['Status'].mean().sort_values() * 100
+        print('hi')
+        result_2024_01_01 = df[df['Date'] > cutoff_date ][ df['Date']< cutoff_end_date].groupby('Course')['Status'].agg(['mean','sum', 'count']).sort_values(by='mean', ascending=True)#.groupby('Course')['Status'].mean().sort_values() * 100
+        result_2024_01_01['mean']=result_2024_01_01['mean']*100
         df=df[df['Date'] > cutoff_date ][ df['Date']< cutoff_end_date]
     
-    return result_2024_01_01.mean(),result_2024_01_01, df
+    return (result_2024_01_01['mean'].mean(),result_2024_01_01['sum'].sum(),result_2024_01_01['count'].sum()),result_2024_01_01, df

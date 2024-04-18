@@ -31,11 +31,21 @@ if st.session_state.username and st.session_state.password and st.session_state.
     startdate = st.date_input(label="Start Date. Defaults to 2024-01-01", value=datetime.date.today().replace(month=1, day=1))
     enddate = st.date_input(label="End Date. Defaults to latest date")
 
-    if st.button('Scrape Data'):
+    if st.sidebar.button('Scrape Data'):
         try:
             df = ScrapeData(st.session_state.username, st.session_state.password, st.session_state.internetlevel)
+            st.session_state.df = df
             ret = ProcessData(df, startdate, enddate)
             st.success(f"Your average attendance is {ret[0]}")
+            st.write("Your subject wise attendance is:")
+            st.write(ret[1])
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+    if st.button('ProcessData'):
+        try:
+            # df = ScrapeData(st.session_state.username, st.session_state.password, st.session_state.internetlevel)
+            ret = ProcessData(st.session_state.df, startdate, enddate)
+            st.success(f"Your average attendance is {ret[0][0]}.\nTotal number of lectures attended: {ret[0][1]}\nTotal number of lectures conducted: {ret[0][2]}")
             st.write("Your subject wise attendance is:")
             st.write(ret[1])
         except Exception as e:
