@@ -17,8 +17,9 @@ def ScrapeData(username: str, password: str, internetlevel=5):
     internetlevel=(5-internetlevel)
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
     driver = webdriver.Chrome(
-        service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()),
+        service=Service(ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install()),
         options=options)
 
     url = "https://portal.svkm.ac.in/usermgmt/login"
