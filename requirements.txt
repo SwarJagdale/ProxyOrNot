@@ -1,5 +1,5 @@
 streamlit 
 pandas
 bs4
-selenium
+seleniumbase
 webdriver-manager
