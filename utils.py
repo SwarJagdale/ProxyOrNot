@@ -7,14 +7,19 @@ from selenium.webdriver.chrome.service import Service
 import time
 from bs4 import BeautifulSoup
 from datetime import datetime
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.os_manager import ChromeType
+
 
 def ScrapeData(username: str, password: str, internetlevel=5):
     """Input: username, password and internetlevel from 0-5. Defaults to 5 (highspeed).
     Returns a dataframe of all the attendance on portal.zsvkm website"""
     internetlevel=(5-internetlevel)
     options = webdriver.ChromeOptions()
-    # options.add_argument("--headless")
-    driver = webdriver.Chrome(options=options)
+    options.add_argument("--headless")
+    driver = webdriver.Chrome(
+        service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()),
+        options=options)
 
     url = "https://portal.svkm.ac.in/usermgmt/login"
 
