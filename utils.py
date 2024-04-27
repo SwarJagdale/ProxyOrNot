@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.os_manager import ChromeType
+import streamlit as st
 
 
 def ScrapeData(username: str, password: str, internetlevel=5):
@@ -18,9 +19,11 @@ def ScrapeData(username: str, password: str, internetlevel=5):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
     options.add_argument("--disable-gpu")
+    ptg=Service(ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install())
+    st.write(ptg)
     driver = webdriver.Chrome(
-        service=Service(ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install()),
-        options=options)
+        service= ptg
+        ,options=options)
 
     url = "https://portal.svkm.ac.in/usermgmt/login"
 
